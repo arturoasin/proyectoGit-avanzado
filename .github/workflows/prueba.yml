@@ -8,13 +8,13 @@ jobs:
 
     steps:
       - name: Comparar DEV_TOKEN con LOCAL_DEV_TOKEN
-        shell: bash
+        shell: powershell
         run: |
-          echo "Comparando DEV_TOKEN (secret) con LOCAL_DEV_TOKEN (variable local)..."
-          if [ "${{ secrets.DEV_TOKEN }}" = "$LOCAL_DEV_TOKEN" ]; then
-            echo "✅ Los tokens COINCIDEN"
+          Write-Host "Comparando DEV_TOKEN (secret) con LOCAL_DEV_TOKEN (variable local)..."
+          if ("${{ secrets.DEV_TOKEN }}" -eq "$env:LOCAL_DEV_TOKEN") {
+            Write-Host "Los tokens COINCIDEN"
             exit 0
-          else
-            echo "❌ Los tokens NO coinciden"
+          } else {
+            Write-Host "Los tokens NO coinciden"
             exit 1
-          fi
+          }
