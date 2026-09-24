@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref || github.ref_name }}
 
       - name: Añadir línea de feature al README
         run: |
