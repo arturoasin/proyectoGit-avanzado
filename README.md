@@ -1,5 +1,3 @@
 Añadida feature: develop
 AppVersion-0
-Añadida feature: develop
-Añadida feature: develop
-Añadida feature: develop
+AppVersion-1 (2026-09-24 ...)

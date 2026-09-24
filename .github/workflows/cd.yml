@@ -1,0 +1,49 @@
+name: CD - Despliegue
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Incrementar versión en README
+        run: |
+          LAST=$(grep -o 'AppVersion-[0-9]*' README.md | tail -1 | grep -o '[0-9]*$')
+          NEXT=$((LAST + 1))
+          FECHA=$(date '+%Y-%m-%d %H:%M:%S')
+          echo "AppVersion-$NEXT ($FECHA)" >> README.md
+
+      - name: Commit y push del README
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Bump versión" || echo "Sin cambios que commitear"
+          git push
+
+  validate-prod:
+    needs: bump-version
+    runs-on: self-hosted
+    steps:
+      - name: Comparar PROD_TOKEN con LOCAL_PROD_TOKEN
+        shell: powershell
+        run: |
+          if ("${{ secrets.PROD_TOKEN }}" -eq "$env:LOCAL_PROD_TOKEN") {
+            Write-Host "Los tokens COINCIDEN"
+            exit 0
+          } else {
+            Write-Host "Los tokens NO coinciden"
+            exit 1
+          }
